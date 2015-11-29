@@ -1,2 +1,2 @@
 # paper-datepicker
-A date picker web component with Polymer 1.2
+A material design date picker component with Polymer 1.0

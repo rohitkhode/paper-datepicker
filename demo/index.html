@@ -1,0 +1,69 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+    <title>paper-datepicker demo</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="stylesheet" href="../bower_components/paper-styles/color.html">
+    <link rel="import" href="../bower_components/paper-styles/demo-pages.html">
+
+    
+    <link rel="import" href="../paper-datepicker.html">
+    <link rel="import" href="../paper-datepicker-dlg.html">
+
+    <style>
+        body {
+            font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+            font-size: 14px;
+            margin: 0;
+            padding: 24px;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -webkit-touch-callout: none;
+        }
+
+    </style>
+</head>
+
+<body unresolved>
+
+    <div class="vertical center-justified layout">
+        <h4>Date Picker</h4>
+        <div class="vertical-section">
+            <paper-datepicker></paper-datepicker>
+        </div>
+
+        <h4>Date Picker Specific Locale</h4>
+        <div class="vertical-section">
+            <paper-datepicker locale="ja-JP"></paper-datepicker>
+        </div>
+
+        <h4>Validation</h4>
+        <div class="vertical-section">
+            <paper-datepicker></paper-datepicker>
+            <br>
+            <button onclick="validate()">Validate!</button>
+        </div>
+
+        <h4>Date Picker Dialog</h4>
+        <div class="vertical-section">
+            <paper-datepicker></paper-datepicker>
+        </div>
+
+    </div>
+    <script>
+        function validate() {
+            document.getElementById('inputForValidation').validate();
+        }
+
+    </script>
+</body>
+
+</html>
