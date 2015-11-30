@@ -133,19 +133,18 @@
 
         </style>
 
-
-
-        <template is="dom-if" if="{{_isEqual(showing,'decade')}}">
+        <template is="dom-if" if="{{_isEqual(showing,'years')}}">
 
             <div>
                 <div class="month-year-bar">
                     <paper-icon-button icon="chevron-left" on-tap="_prevDecade"></paper-icon-button>
-                    <span>Select Year</span>
+                    <span>{{yearsDisplayModel.from.name}}</span> - <span>{{yearsDisplayModel.to.name}}</span>
+
                     <paper-icon-button icon="chevron-right" on-tap="_nextDecade"></paper-icon-button>
                 </div>
                 <div class="items-area" on-tap="_pickYear">
-                    <template is="dom-repeat" items="{{decadeYears}}">
-                        <div class="month selectable title" data-year$={{item}}>{{item}}</div>
+                    <template is="dom-repeat" items="{{yearsDisplayModel.years}}">
+                        <div class="month selectable title" data-year$={{item.n}}>{{item.name}}</div>
                     </template>
                 </div>
             </div>
@@ -153,12 +152,12 @@
         </template>
 
 
-        <template is="dom-if" if="{{_isEqual(showing,'year')}}">
+        <template is="dom-if" if="{{_isEqual(showing,'months')}}">
 
             <div>
                 <div class="month-year-bar">
                     <paper-icon-button icon="chevron-left" on-tap="_prevYear"></paper-icon-button>
-                    <span class="selectable" on-tap="_showDecade">{{_activeYear}}</span>
+                    <span class="selectable" on-tap="_showYears">{{intl.year(_activeYear)}}</span>
                     <paper-icon-button icon="chevron-right" on-tap="_nextYear"></paper-icon-button>
                 </div>
                 <div class="items-area" on-tap="_pickMonth">
@@ -170,11 +169,11 @@
 
         </template>
 
-        <template is="dom-if" if="{{_isEqual(showing,'month')}}">
+        <template is="dom-if" if="{{_isEqual(showing,'dates')}}">
             <div data-month$="{{month.number}}" data-year$="{{month.year}}">
                 <div class="month-year-bar">
                     <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
-                    <span on-tap="_showYear" class="selectable">{{month.name}}</span>
+                    <span on-tap="_showMonths" class="selectable">{{month.name}}</span>
                     <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
                 </div>
                 <div class="items-area" on-tap="_pickDate">
@@ -206,6 +205,13 @@
     Polymer({
         is: 'paper-datepicker',
         properties: {
+            /**
+             * Value Binding
+             * 
+             * @attribute value
+             * @type Date
+             * @default today's date
+             */
             value: {
                 type: Date,
                 value: new Date(),
@@ -218,16 +224,29 @@
              * @attribute startOfWeek
              * @type Integer
              * @default 1
-             * 
              */
             startOfWeek: {
                 type: Number,
                 value: 1,
             },
+            /**
+             * locale
+             * 
+             * @attribute locale
+             * @type String
+             * @default navigator.language
+             */            
             locale: {
                 type: String,
                 value: navigator.language,
             },
+            /**
+             * array of weekdays to disable, e.g [0,6]
+             * 
+             * @attribute disabledDays
+             * @type Array
+             * @default undefined
+             */            
             disabledDays: {
                 type: Array
             }
@@ -290,23 +309,25 @@
             var month = data.month;
             var year = data.year;
             if (day && month && year) {
-                this.set('value', new Date(year, month, day));
-                //this.value = new Date(year, month, day);
-                //console.log('firing selection-change event');
-                this.fire("selection-changed", this.getDetails(this.value));
+                var privValue = this.value;
+                var newValue = new Date(year, month, day);
+                
+                this.set('value', newValue);
+                this.fire("selection-changed", this._getEventDetails(privValue, newValue));
 
             }
         },
-        getDetails: function(dValue) {
+        _getEventDetails: function(privValue, newValue) {
 
-            if(!dValue)dValue = new Date();
+            if(!newValue)newValue = new Date();
             
             return {
-                'value': dValue,
-                'day': this.weekDayNames ? this.weekDayNames_long[dValue.getDay()] : dValue.getDay(),
-                'date': dValue.getDate(),
-                'month': this.monthNames ? this.monthNames[dValue.getMonth()].name : dValue.getMonth(),
-                'year': dValue.getFullYear()
+                'oldvalue': privValue,
+                'value': newValue,
+                'day': this.weekDayNames ? this.weekDayNames_long[newValue.getDay()] : newValue.getDay(),
+                'date': newValue.getDate(),
+                'month': this.monthNames ? this.monthNames[newValue.getMonth()].name : newValue.getMonth(),
+                'year': newValue.getFullYear()
             }
 
         },
@@ -317,7 +338,7 @@
             if (data && data.month) {
                 this._activeMonth = parseInt(data.month);
                 this.prepareMonth(this._activeMonth, this._activeYear);
-                this.set('showing', 'month');
+                this.set('showing', 'dates');
             }
         },
         _pickYear: function(e) {
@@ -326,7 +347,7 @@
             if (data && data.year) {
                 this._activeYear = parseInt(data.year);
                 this.prepareMonth(this._activeMonth, this._activeYear);
-                this.set('showing', 'year');
+                this.set('showing', 'months');
             }
         },
         _getDateClass: function(day, month, selected) {
@@ -344,10 +365,8 @@
         },
         prepareMonth: function(curMonth, curYear) {
 
-            //console.log(curMonth, curYear);
-
             if (!this.intl) {
-                return; //this._settingsChanged();
+                return;
             }
             var month = {
                 days: [],
@@ -366,8 +385,6 @@
             }
             for (i = 1; i <= endPoint; i++) {
                 var thisDate = new Date(curYear, curMonth, i);
-                //console.log(this.disabledDays, thisDate.getDay(), this.disabledDays?this.disabledDays.indexOf(thisDate.getDay())>=0: false);
-
                 month.days.push({
                     n: i,
                     day: this.intl.day(thisDate),
@@ -375,41 +392,48 @@
                 });
             }
 
-            //console.log(month);
             this.set('month', month);
         },
         _isEqual: function(showing, mode) {
             return showing == mode;
         },
-        _showYear: function() {
-            this.set('showing', 'year');
+        _showMonths: function() {
+            this.set('showing', 'months');
         },
         _nextDecade: function() {
+            var min = this.yearsDisplayModel.from.n+10;
+            var max = this.yearsDisplayModel.to.n+10;
 
             var years = [];
-            for (var idx in this.decadeYears) {
-                years.push(this.decadeYears[idx] + 10);
+            for (var i = min; i <= max; i++) {
+                years.push({n:i, name: this.intl.year(i)});
             }
-            this.set('decadeYears', years);
-
+            
+            this.set('yearsDisplayModel', {from:{n:min,name:this.intl.year(min)}, to:{n:max,name:this.intl.year(max)}, years:years});
         },
         _prevDecade: function() {
+            var min = this.yearsDisplayModel.from.n-10;
+            var max = this.yearsDisplayModel.to.n-10;
+
             var years = [];
-            for (var idx in this.decadeYears) {
-                years.push(this.decadeYears[idx] - 10);
+            for (var i = min; i <= max; i++) {
+                years.push({n:i, name: this.intl.year(i)});
             }
-            this.set('decadeYears', years);
+            
+            this.set('yearsDisplayModel', {from:{n:min,name:this.intl.year(min)}, to:{n:max,name:this.intl.year(max)}, years:years});
         },
-        _showDecade: function() {
+        _showYears: function() {
             var min = this._activeYear - (this._activeYear % 10);
             var max = min + 10;
 
             var years = [];
             for (var i = min; i <= max; i++) {
-                years.push(i);
+                years.push({n:i, name: this.intl.year(i)});
             }
-            this.set('decadeYears', years);
-            this.set('showing', 'decade');
+            
+            
+            this.set('yearsDisplayModel', {from:{n:min,name:this.intl.year(min)}, to:{n:max,name:this.intl.year(max)}, years:years});
+            this.set('showing', 'years');
         },
         _settingsChanged: function(l, s, d) {
             if (!this.locale) return;
@@ -418,11 +442,22 @@
             this.intl.day = Intl.DateTimeFormat(this.locale, {
                 day: 'numeric'
             }).format;
+            this.intl.year = Intl.NumberFormat(this.locale, {
+                minimumIntegerDigits:4,
+                maximumSignificantDigits:4,
+                minimumSignificantDigits:4,
+                minimumFractionDigits:0,
+                maximumFractionDigits:0,
+                useGrouping: false,
+                style: 'decimal'
+            }).format;
+
             this.intl.month_name_year = Intl.DateTimeFormat(this.locale, {
                 month: 'long',
                 year: 'numeric'
             }).format;
 
+            
             var weekDayNames = [];
             for (var i = this.startOfWeek - 1; i < this.startOfWeek + 6; i++) {
                 var date = new Date(2000, 1, i, 0, 0, 0);
@@ -465,7 +500,7 @@
             this.prepareMonth(this._activeMonth, this._activeYear);
         },
         ready: function() {
-            this.set('showing', 'month');
+            this.set('showing', 'dates');
             this._settingsChanged();
 
             if (!this.value) {
