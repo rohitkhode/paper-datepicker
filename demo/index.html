@@ -31,48 +31,48 @@
 
     </style>
 
-    <script>
-        function _showDatePicker() {
-            document.getElementById('_dlg').open();
-        }
-
-    </script>
+        <script>
+            function _showDatePicker() {
+                document.getElementById('_dlg').open();
+            }
+        </script>
 
 </head>
 
 <body unresolved>
 
-    <div class="vertical center-justified layout">
-        <div class="vertical-section">
-            <p>Simple</p>
-            <paper-datepicker></paper-datepicker>
+    <template is="dom-bind" id="app">
+
+        <div class="vertical center-justified layout">
+            <div class="vertical-section">
+                <p>Simple</p>
+                <paper-datepicker value="{{date_value}}"></paper-datepicker>
+                <p>{{date_value}}</p>
+            </div>
+
+            <div class="vertical-section">
+                <p>With locale settings</p>
+                <paper-datepicker locale="ar-SA" value="{{date_value}}"></paper-datepicker>
+                <p>{{date_value}}</p>
+            </div>
+
+            <div class="vertical-section">
+                <p>Start of Week as Sunday</p>
+                <paper-datepicker start-of-week="0" value="{{date_value}}"></paper-datepicker>
+                <p>{{date_value}}</p>
+            </div>
+
+            <div class="vertical-section">
+                <p>Weekend Friday/Saturday</p>
+                <paper-datepicker disabled-days="[5,6]" value="{{date_value}}"></paper-datepicker>
+                <p>{{date_value}}</p>
+            </div>
+
+            <paper-datepicker-dlg value="{{date_value}}" locale="th-TH" disabled-days="[6,0]" start-of-week="1" id="_dlg"></paper-datepicker-dlg>
+
+            <paper-button onclick="_showDatePicker()">Open Date Picker</paper-button>
         </div>
-
-        <div class="vertical-section">
-            <p>With locale settings</p>
-            <paper-datepicker locale="ar-SA"></paper-datepicker>
-        </div>
-
-        <div class="vertical-section">
-            <p>Start of Week as Sunday</p>
-            <paper-datepicker start-of-week="0"></paper-datepicker>
-        </div>
-
-        <div class="vertical-section">
-            <p>Weekend Friday/Saturday</p>
-            <paper-datepicker disabled-days="[5,6]"></paper-datepicker>
-        </div>
-
-        <div class="vertical-section">
-            <p>Weekend Friday/Saturday</p>
-            <paper-datepicker disabled-days="[5,6]"></paper-datepicker>
-        </div>
-
-        <paper-datepicker-dlg id="_dlg"></paper-datepicker-dlg>
-
-        <paper-button on-click="_showDatePicker()">Open Date Picker</paper-button>
-    </div>
-
+    </template>
 </body>
 
 </html>

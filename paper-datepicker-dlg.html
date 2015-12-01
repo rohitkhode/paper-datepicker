@@ -94,12 +94,12 @@
             <div class="container horizontal no-padding">
                 <div class="header">
                     <div class="dayOfWeekContainer" id="day">{{day}}</div>
-                    <div class="monthContainer selectable" id="month" on-tap="_showYear"><span>{{month}}</span></div>
-                    <div class="dayOfMonthContainer selectable" id="date" on-tap="_showMonth"><span>{{date}}</span></div>
-                    <div class="yearContainer selectable" id="year" on-tap="_showDecade"><span>{{year}}</span></div>
+                    <div class="monthContainer selectable" id="month" on-tap="_showMonths"><span>{{month}}</span></div>
+                    <div class="dayOfMonthContainer selectable" id="date" on-tap="_showDates"><span>{{date}}</span></div>
+                    <div class="yearContainer selectable" id="year" on-tap="_showYears"><span>{{year}}</span></div>
                 </div>
                 <div class="vertical">
-                    <fin-date-picker id="datePicker" value="{{localValue}}" locale="[[locale]]" start-of-week="[[startOfWeek]]" disabled-days="[[disabledDays]]"></fin-date-picker>
+                    <paper-datepicker id="datePicker" value="{{localValue}}" locale="[[locale]]" start-of-week="[[startOfWeek]]" disabled-days="[[disabledDays]]"></paper-datepicker>
                     <div class="horizontal">
                         <div class="filler"></div>
                         <paper-button on-tap="_onCancel">Cancel</paper-button>
@@ -138,18 +138,18 @@
         open: function() {
             this.set('localValue', this.value);
             this._refreshDetails({
-                detail: this.$.datePicker.getDetails(this.value)
+                detail: this.$.datePicker._getEventDetails(this.value)
             });
             this.$.dialog.open();
         },
-        _showMonth: function(){
-            this.$.datePicker.set('showing', 'month');
+        _showDates: function(){
+            this.$.datePicker.set('showing', 'dates');
         },
-        _showYear: function(){
-            this.$.datePicker._showYear();
+        _showMonths: function(){
+            this.$.datePicker._showMonths();
         },
-        _showDecade: function(){
-            this.$.datePicker._showDecade();
+        _showYears: function(){
+            this.$.datePicker._showYears();
         },
         
         listeners: {
