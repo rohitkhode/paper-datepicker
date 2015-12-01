@@ -157,11 +157,11 @@
             <div>
                 <div class="month-year-bar">
                     <paper-icon-button icon="chevron-left" on-tap="_prevYear"></paper-icon-button>
-                    <span class="selectable" on-tap="_showYears">{{intl.year(_activeYear)}}</span>
+                    <span class="selectable" on-tap="_showYears">{{_formatYear(_activeYear)}}</span>
                     <paper-icon-button icon="chevron-right" on-tap="_nextYear"></paper-icon-button>
                 </div>
                 <div class="items-area" on-tap="_pickMonth">
-                    <template is="dom-repeat" items="{{monthNames}}">
+                    <template is="dom-repeat" items="{{_monthNames}}">
                         <div class="month selectable title" data-month$={{item.n}}>{{item.name}}</div>
                     </template>
                 </div>
@@ -177,7 +177,7 @@
                     <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
                 </div>
                 <div class="items-area" on-tap="_pickDate">
-                    <template is="dom-repeat" items="{{weekDayNames}}">
+                    <template is="dom-repeat" items="{{_weekDayNames}}">
                         <div class="day title">{{item}}</div>
                     </template>
 
@@ -252,10 +252,10 @@
             }
         },
 
-        weekDayNames: [],
-        weekDayNames_long: [],
-        monthNames: [],
-        monthNames_long: [],
+        _weekDayNames: [],
+        _weekDayNames_long: [],
+        _monthNames: [],
+        _monthNames_long: [],
         month: Object,
         _activeMonth: 0,
         _activeYear: 0,
@@ -272,13 +272,13 @@
                 if (this._activeMonth != this.value.getMonth() || this._activeYear != this.value.getFullYear()) {
                     this._activeMonth = this.value.getMonth();
                     this._activeYear = this.value.getFullYear();
-                    this.prepareMonth(this._activeMonth, this._activeYear);
+                    this._prepareMonth(this._activeMonth, this._activeYear);
                 }
             } else {
                 var today = new Date();
                 this._activeMonth = today.getMonth();
                 this._activeYear = today.getFullYear();
-                this.prepareMonth(this._activeMonth, this._activeYear);
+                this._prepareMonth(this._activeMonth, this._activeYear);
             }
         },
         _prevMonth: function() {
@@ -287,7 +287,7 @@
                 this._activeYear = this._activeYear - 1;
                 this._activeMonth = 11;
             }
-            this.prepareMonth(this._activeMonth, this._activeYear);
+            this._prepareMonth(this._activeMonth, this._activeYear);
         },
         _nextMonth: function() {
             this._activeMonth = this._activeMonth + 1;
@@ -295,7 +295,7 @@
                 this._activeYear = this._activeYear + 1;
                 this._activeMonth = 0;
             }
-            this.prepareMonth(this._activeMonth, this._activeYear);
+            this._prepareMonth(this._activeMonth, this._activeYear);
         },
         _prevYear: function() {
             this._activeYear--;
@@ -324,9 +324,9 @@
             return {
                 'oldvalue': privValue,
                 'value': newValue,
-                'day': this.weekDayNames ? this.weekDayNames_long[newValue.getDay()] : newValue.getDay(),
+                'day': this._weekDayNames ? this._weekDayNames_long[newValue.getDay()] : newValue.getDay(),
                 'date': newValue.getDate(),
-                'month': this.monthNames ? this.monthNames[newValue.getMonth()].name : newValue.getMonth(),
+                'month': this._monthNames ? this._monthNames[newValue.getMonth()].name : newValue.getMonth(),
                 'year': newValue.getFullYear()
             }
 
@@ -334,19 +334,19 @@
         _pickMonth: function(e) {
 
             var data = e.path[1].dataset.date ? e.path[1].dataset : e.path[0].dataset;
-            console.log(e, data);
+            //console.log(e, data);
             if (data && data.month) {
                 this._activeMonth = parseInt(data.month);
-                this.prepareMonth(this._activeMonth, this._activeYear);
+                this._prepareMonth(this._activeMonth, this._activeYear);
                 this.set('showing', 'dates');
             }
         },
         _pickYear: function(e) {
             var data = e.path[1].dataset.date ? e.path[1].dataset : e.path[0].dataset;
-            console.log(e, data);
+            //console.log(e, data);
             if (data && data.year) {
                 this._activeYear = parseInt(data.year);
-                this.prepareMonth(this._activeMonth, this._activeYear);
+                this._prepareMonth(this._activeMonth, this._activeYear);
                 this.set('showing', 'months');
             }
         },
@@ -363,7 +363,7 @@
             }
             return retClass;
         },
-        prepareMonth: function(curMonth, curYear) {
+        _prepareMonth: function(curMonth, curYear) {
 
             if (!this.intl) {
                 return;
@@ -406,10 +406,10 @@
 
             var years = [];
             for (var i = min; i <= max; i++) {
-                years.push({n:i, name: this.intl.year(i)});
+                years.push({n:i, name: this._formatYear(i)});
             }
             
-            this.set('yearsDisplayModel', {from:{n:min,name:this.intl.year(min)}, to:{n:max,name:this.intl.year(max)}, years:years});
+            this.set('yearsDisplayModel', {from:{n:min,name:this._formatYear(min)}, to:{n:max,name:this._formatYear(max)}, years:years});
         },
         _prevDecade: function() {
             var min = this.yearsDisplayModel.from.n-10;
@@ -417,10 +417,10 @@
 
             var years = [];
             for (var i = min; i <= max; i++) {
-                years.push({n:i, name: this.intl.year(i)});
+                years.push({n:i, name: this._formatYear(i)});
             }
             
-            this.set('yearsDisplayModel', {from:{n:min,name:this.intl.year(min)}, to:{n:max,name:this.intl.year(max)}, years:years});
+            this.set('yearsDisplayModel', {from:{n:min,name:this._formatYear(min)}, to:{n:max,name:this._formatYear(max)}, years:years});
         },
         _showYears: function() {
             var min = this._activeYear - (this._activeYear % 10);
@@ -428,11 +428,11 @@
 
             var years = [];
             for (var i = min; i <= max; i++) {
-                years.push({n:i, name: this.intl.year(i)});
+                years.push({n:i, name: this._formatYear(i)});
             }
             
             
-            this.set('yearsDisplayModel', {from:{n:min,name:this.intl.year(min)}, to:{n:max,name:this.intl.year(max)}, years:years});
+            this.set('yearsDisplayModel', {from:{n:min,name:this._formatYear(min)}, to:{n:max,name:this._formatYear(max)}, years:years});
             this.set('showing', 'years');
         },
         _settingsChanged: function(l, s, d) {
@@ -442,7 +442,7 @@
             this.intl.day = Intl.DateTimeFormat(this.locale, {
                 day: 'numeric'
             }).format;
-            this.intl.year = Intl.NumberFormat(this.locale, {
+            this._formatYear = Intl.NumberFormat(this.locale, {
                 minimumIntegerDigits:4,
                 maximumSignificantDigits:4,
                 minimumSignificantDigits:4,
@@ -466,19 +466,19 @@
                 }).format(date));
             }
 
-            console.log(weekDayNames);
-            this.set('weekDayNames', weekDayNames);
+            //console.log(weekDayNames);
+            this.set('_weekDayNames', weekDayNames);
 
-            this.weekDayNames_long = [];
+            this._weekDayNames_long = [];
             for (var i = -1; i < 6; i++) {
                 var date = new Date(2000, 1, i, 0, 0, 0);
-                this.weekDayNames_long.push(Intl.DateTimeFormat(this.locale, {
+                this._weekDayNames_long.push(Intl.DateTimeFormat(this.locale, {
                     weekday: 'long'
                 }).format(date));
             }
 
 
-            this.monthNames_long = [];
+            this._monthNames_long = [];
             var monthNames = [];
             for (var i = 0; i < 12; i++) {
                 var date = new Date(2000, i, 1, 0, 0, 0);
@@ -489,15 +489,15 @@
                     n: i
                 });
 
-                this.monthNames_long.push(
+                this._monthNames_long.push(
                     Intl.DateTimeFormat(this.locale, {
                         month: 'long'
                     }).format(date));
             }
-            this.set('monthNames', monthNames);
+            this.set('_monthNames', monthNames);
 
-            console.log('refresh settings....')
-            this.prepareMonth(this._activeMonth, this._activeYear);
+            //console.log('refresh settings....')
+            this._prepareMonth(this._activeMonth, this._activeYear);
         },
         ready: function() {
             this.set('showing', 'dates');
@@ -506,7 +506,7 @@
             if (!this.value) {
                 this.set('value', new Date());
             }
-            this.prepareMonth(this.value.getMonth(), this.value.getFullYear());
+            this._prepareMonth(this.value.getMonth(), this.value.getFullYear());
         }
     });
 

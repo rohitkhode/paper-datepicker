@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../bower_components/paper-styles/color.html">
     <link rel="import" href="../bower_components/paper-styles/demo-pages.html">
 
-    
+
     <link rel="import" href="../paper-datepicker.html">
     <link rel="import" href="../paper-datepicker-dlg.html">
 
@@ -30,40 +30,49 @@
         }
 
     </style>
+
+    <script>
+        function _showDatePicker() {
+            document.getElementById('_dlg').open();
+        }
+
+    </script>
+
 </head>
 
 <body unresolved>
 
     <div class="vertical center-justified layout">
-        <h4>Date Picker</h4>
         <div class="vertical-section">
+            <p>Simple</p>
             <paper-datepicker></paper-datepicker>
         </div>
 
-        <h4>Date Picker Specific Locale</h4>
         <div class="vertical-section">
+            <p>With locale settings</p>
             <paper-datepicker locale="ar-SA"></paper-datepicker>
         </div>
 
-        <h4>Validation</h4>
         <div class="vertical-section">
-            <paper-datepicker></paper-datepicker>
-            <br>
-            <button onclick="validate()">Validate!</button>
+            <p>Start of Week as Sunday</p>
+            <paper-datepicker start-of-week="0"></paper-datepicker>
         </div>
 
-        <h4>Date Picker Dialog</h4>
         <div class="vertical-section">
-            <paper-datepicker></paper-datepicker>
+            <p>Weekend Friday/Saturday</p>
+            <paper-datepicker disabled-days="[5,6]"></paper-datepicker>
         </div>
 
+        <div class="vertical-section">
+            <p>Weekend Friday/Saturday</p>
+            <paper-datepicker disabled-days="[5,6]"></paper-datepicker>
+        </div>
+
+        <paper-datepicker-dlg id="_dlg"></paper-datepicker-dlg>
+
+        <paper-button on-click="_showDatePicker()">Open Date Picker</paper-button>
     </div>
-    <script>
-        function validate() {
-            document.getElementById('inputForValidation').validate();
-        }
 
-    </script>
 </body>
 
 </html>
