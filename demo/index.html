@@ -43,7 +43,19 @@
 
     <template is="dom-bind" id="app">
 
+        
+        
         <div class="vertical center-justified layout">
+
+            <div class="vertical-section">
+                        <paper-datepicker-dlg value="{{date_value}}"  disabled-days="[6,0]" start-of-week="1" id="_dlg"></paper-datepicker-dlg>
+
+                                <p>{{date_value}}</p>
+                <paper-button onclick="_showDatePicker()" color raised>Change Date</paper-button>
+
+
+            </div>
+            
             <div class="vertical-section">
                 <p>Simple</p>
                 <paper-datepicker value="{{date_value}}"></paper-datepicker>
@@ -68,9 +80,6 @@
                 <p>{{date_value}}</p>
             </div>
 
-            <paper-datepicker-dlg value="{{date_value}}" locale="th-TH" disabled-days="[6,0]" start-of-week="1" id="_dlg"></paper-datepicker-dlg>
-
-            <paper-button onclick="_showDatePicker()">Open Date Picker</paper-button>
         </div>
     </template>
 </body>
